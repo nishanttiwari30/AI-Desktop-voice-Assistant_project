@@ -1,0 +1,533 @@
+from tkinter import *
+from urllib.request import urlopen
+import pywhatkit
+import json
+import pyjokes
+import pyttsx3
+import datetime
+import speech_recognition as sr
+import wikipedia
+import numpy as np
+import cv2
+import pyautogui
+import webbrowser as wb
+import webbrowser
+import os
+import random
+import requests
+import smtplib
+from translate import Translator
+
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+window = Tk()
+
+global var
+global var1
+
+var = StringVar()
+var1 = StringVar()
+
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+
+def sendemail(to, content):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.ehlo()
+    server.starttls()
+    server.login('prakharmaheshwari817@gmail.com', 'Pmaheshwari008@#*')
+    server.sendmail('prakharmaheshwari817@gmail.com', to, content)
+    server.close()
+
+
+def wishme():
+    hour = int(datetime.datetime.now().hour)
+    if hour >= 0 and hour <= 12:
+        var.set("Good Morning Sir")  # Name - your Name
+        window.update()
+        speak("Good Morning Sir!")
+    elif hour >= 12 and hour <= 18:
+        var.set("Good Afternoon Sir!")
+        window.update()
+        speak("Good Afternoon Sir!")
+    else:
+        var.set("Good Evening Sir")
+        window.update()
+        speak("Good Evening Sir!")
+
+def Introduction():
+    var.set("I am JARVIS 1.0 , Personal AI assistant , "
+    "I am created by MAK , "
+    "I can help you in various regards , "
+    "I can search for you on the Internet , "
+    "I can also grab definitions for you from wikipedia , "
+    "In layman terms , I can try to make your life a bed of roses , "
+    "Where you just have to command me , and I will do it for you , ")
+    window.update()
+    speak("I am JARVIS 1.0 , Personal AI assistant , "
+    "I am created by MAK , "
+    "I can help you in various regards , "
+    "I can search for you on the Internet , "
+    "I can also grab definitions for you from wikipedia , "
+    "In layman terms , I can try to make your life a bed of roses , "
+    "Where you just have to command me , and I will do it for you , ")
+
+def takeCommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        var.set("Listening...")
+        window.update()
+        print("Listening...")
+        r.pause_threshold = 1
+        r.energy_threshold = 400
+        audio = r.listen(source)
+    try:
+        var.set("Recognizing...")
+        window.update()
+        print("Recognizing")
+        query = r.recognize_google(audio, language='en-in')
+    except Exception as e:
+        return takeCommand()
+    var1.set(query)
+    window.update()
+    return query
+
+    wishme()
+
+def play():
+    btn2['state'] = 'disabled'
+    btn0['state'] = 'disabled'
+    btn1.configure(bg='orange')
+
+    while True:
+        btn1.configure(bg='orange')
+        query = takeCommand().lower()
+        if 'exit' in query or 'quit' in query:
+            var.set("Bye sir")
+            btn1.configure(bg='#5C85FB')
+            btn2['state'] = 'normal'
+            btn0['state'] = 'normal'
+            window.update()
+            speak("Bye sir")
+            break
+
+        elif 'wikipedia' in query:
+            if 'open wikipedia' in query:
+                webbrowser.open('wikipedia.com')
+            else:
+                try:
+                    speak("searching wikipedia")
+                    query = query.replace("according to wikipedia", "")
+                    results = wikipedia.summary(query, sentences=2)
+                    speak("According to wikipedia")
+                    var.set(results)
+                    window.update()
+                    speak(results)
+                except Exception as e:
+                    var.set('sorry sir could not find any results')
+                    window.update()
+                    speak('sorry sir could not find any results')
+
+        elif 'open youtube' in query:
+            var.set('opening Youtube')
+            window.update()
+            speak('opening Youtube')
+            webbrowser.open("youtube.com")
+
+        elif 'open course error' in query or "coursera" in query:
+            var.set('opening course era')
+            window.update()
+            speak('opening course era')
+            webbrowser.open("coursera.com")
+
+        elif 'open google' in query:
+            var.set('opening google')
+            window.update()
+            speak('opening google')
+            webbrowser.open("google.com")
+
+        elif 'hello' in query or 'hii' in query:
+            var.set('Hello Sir')
+            window.update()
+            speak("Hello Sir")
+
+        elif 'open stackoverflow' in query:
+            var.set('opening stackoverflow')
+            window.update()
+            speak('opening stackoverflow')
+            webbrowser.open('stackoverflow.com')
+
+        elif ('play music' in query) or ('change music') in query:
+            var.set('Here are your favorites')
+            window.update()
+            speak('Here are your favorites')
+            music_dir = "D:\Prakhar's new song"  # Enter the Path of Music Library
+            songs = os.listdir(music_dir)
+            n = random.randint(0, 27)
+            os.startfile(os.path.join(music_dir, songs[n]))
+
+        elif 'the time' in query or 'time' in query:
+            strtime = datetime.datetime.now().strftime("%H:%M:%S")
+            var.set("Sir the time is %s" % strtime)
+            window.update()
+            speak("Sir the time is %s" % strtime)
+
+        elif 'the date' in query or 'date' in query:
+            strdate = datetime.datetime.today().strftime("%d %m %y")
+            var.set("Sir today's date is %s" % strdate)
+            window.update()
+            speak("Sir today's date is %s" % strdate)
+
+        elif 'thank you' in query:
+            var.set("Welcome Sir")
+            window.update()
+            speak("Welcome Sir")
+
+        elif 'can you do for me' in query:
+            var.set('I can do multiple tasks for you sir. tell me whatever you want to perform sir')
+            window.update()
+            speak('I can do multiple tasks for you sir. tell me whatever you want to perform sir')
+
+        elif 'old are you' in query:
+            var.set("I am only 10 days old sir")
+            window.update()
+            speak("I am only 10 days old sir")
+
+        elif 'open media player' in query:
+            var.set("opening VLC media Player")
+            window.update()
+            speak("opening V L C media player")
+            path = "C:\\Program Files\\Windows Media Player\\wmplayer.exe"  # Enter the correct Path according to your system
+            os.startfile(path)
+
+        elif 'your name' in query:
+            var.set("Myself Jarvis 2.O , Sir")
+            window.update()
+            speak('myself Jarvis  2.O, sir')
+
+        elif 'who creates you' in query:
+            var.set('My Creator is Mr.Prakhar Maheshwari')
+            window.update()
+            speak('My Creator is Mr.Prakhar Maheshwari')
+
+        elif 'say hello' in query:
+            var.set('Hello Everyone! My self Jarvis')
+            window.update()
+            speak('Hello Everyone! My self Jarvis')
+
+        elif 'open pycharm' in query or "pycharm" in query:
+            var.set("Openong Pycharm")
+            window.update()
+            speak("Opening Pycharm")
+            path = "C:\\Program Files\\JetBrains\\PyCharm Community Edition 2018.3.2\\bin\\pycharm64.exe"  # Enter the correct Path according to your system
+            os.startfile(path)
+
+        elif 'open chrome' in query or "chrome" in query:
+            var.set("Opening Google Chrome")
+            window.update()
+            speak("Opening Google Chrome")
+            path = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"  # Enter the correct Path according to your system
+            os.startfile(path)
+
+        elif 'email to Prakhar' in query or 'send email' in query or 'email' in query:
+            try:
+                var.set("What should I say")
+                window.update()
+                speak('what should I say')
+                content = takeCommand()
+                to = "pmaheshwari054@gmail.com"
+                sendemail(to, content)
+                var.set('Email has been sent!')
+                window.update()
+                speak('Email has been sent!')
+
+            except Exception as e:
+                print(e)
+                var.set("Sorry Sir! I was not able to send this email")
+                window.update()
+                speak('Sorry Sir! I was not able to send this email')
+
+        elif "open python" in query or "IDE" in query:
+            var.set("Opening Python Ide")
+            window.update()
+            speak('opening python Ide')
+            os.startfile(
+                'C:\\Users\\mridu\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Python 3.7\\IDLE (Python 3.7 64-bit)')  # Enter the correct Path according to your system
+
+        elif 'open code blocks' in query:
+            var.set('Opening Codeblocks')
+            window.update()
+            speak('opening Codeblocks')
+            os.startfile(
+                "C:\\Program Files (x86)\\CodeBlocks\\codeblocks.exe")  # Enter the correct Path according to your system
+
+        elif "how are you" in query:
+            print("I am fine, Thank you")
+            speak("I am fine, Thank you")
+            # print("How are you , sir")
+            speak("How are you , sir")
+
+        elif "exit" in query or "quit" in query or "bye" in query:
+            break
+
+        elif "who are you" in query:
+            print("I am your virtual assistant created by Prakhar Maheshwari")
+            speak("I am your virtual assistant created by Prakhar Maheshwari")
+
+        elif 'reason for you' in query:
+            print("I was created as a Minor project by Mr. Prakhar Maheshwari ")
+            speak("I was created as a Minor project by Mr. Prakhar Maheshwari")
+
+        elif "fine" in query or "good" in query:
+            var.set("It's Good to Know that you are fine")
+            window.update()
+            # print("It's Good to Know that you are fine")
+            speak("It's Good to Know that you are fine")
+
+        elif "who made you" in query or "who create you" in query:
+            var.set("I has been created by Prakhar Maheshwari.")
+            window.update()
+            # print("I has been created by Prakhar Maheshwari.")
+            speak("I has been created by Prakhar Maheshwari.")
+        elif "write a note" in query or "note" in query:
+            var.set("What should i write, sir")
+            window.update()
+            speak("What should i write, sir")
+            note = takeCommand()
+            file = open('jarvis.txt', 'w')
+            var.set(file)
+            window.update()
+            speak("Sir, Should I include date and time")
+            snfm = takeCommand()
+            if 'yes' in snfm or 'sure' in snfm:
+                strTime = datetime.datetime.now().strftime("%H:%M:%S")
+                file.write(strTime)
+                file.write(" :- ")
+                file.write(note)
+            else:
+                file.write(note)
+
+        elif "show note" in query or "show" in query:
+            speak("Showing Notes")
+            file = open("jarvis.txt", "r")
+            print(file.read())
+            var.set(file)
+            window.update()
+            speak(file.read(6))
+        elif "translate" in query:
+            var.set("Please tell the language")
+            window.update()
+            take = takeCommand()
+            speak(take)
+            translator = Translator(to_lang=take)
+            takes = takeCommand()
+            translation = translator.translate(takes)
+            var.set(translation)
+            window.update()
+            speak(translation)
+
+        elif "who i am" in query:
+            var.set("If you talk then definately you're human.")
+            window.update()
+            # print("If you talk then definately your human.")
+            speak("If you talk then definately you're human.")
+
+        elif "why you came to world" in query:
+            var.set("Thanks to Prakhar. further It's a secret")
+            window.update()
+            # print("Thanks to Prakhar. further It's a secret")
+            speak("Thanks to Prakhar. further It's a secret")
+
+        elif "screenshot" in query:
+            var.set("Taking Sreenshot..")
+            window.update()
+
+            # take screenshot using pyautogui
+            image = pyautogui.screenshot()
+
+            # since the pyautogui takes as a
+            # PIL(pillow) and in RGB we need to
+            # convert it to numpy array and BGR
+            # so we can write it to the disk
+            image = cv2.cvtColor(np.array(image),cv2.COLOR_RGB2BGR)
+
+            # writing it to the disk using opencv
+            cv2.imwrite("image1.png", image)
+
+
+        elif "where is" in query or "location" in query:
+            query = query.replace("where is", "")
+            loc = takeCommand()
+            var.set(f"Now, We are going to {loc} through virtual mode hehehehe.. ")
+            speak(" We are going to {loc}")
+            wb.open("https://www.google.com/maps/place/" + loc + "")
+
+
+        elif 'is love' in query:
+            var.set("It is 7th sense that destroy all other senses")
+            window.update()
+            # print("It is 7th sense that destroy all other senses")
+            speak("It is 7th sense that destroy all other senses")
+
+        elif "joke" in query:
+            var.set(pyjokes.get_joke())
+            window.update()
+            speak(pyjokes.get_joke())
+
+        elif "weather" in query:
+            # Enter your API key here
+            api_key = "RA6KRJ-TH4QQ2X6J6"
+            BASE_URL = "https://api.openweathermap.org/data/2.5/weather?"
+            CITY = takeCommand()
+            # API key API_KEY = "Your API Key"
+            API_KEY = "RA6KRJ-TH4QQ2X6J6"
+            # upadting the URL
+            URL = BASE_URL + "q=" + CITY + "&appid=" + API_KEY
+            # HTTP request
+            response = requests.get(URL)
+            # checking the status code of the request
+            if response.status_code == 200:
+                # getting data in the json format
+                data = response.json()
+                # getting the main dict block
+                main = data['main']
+                # getting temperature
+                temperature = main['temp']
+                # getting the humidity
+                humidity = main['humidity']
+                # getting the pressure
+                pressure = main['pressure']
+                # weather report
+                report = data['weather']
+                # print(f"{CITY:-^30}")
+                var.set(f"{CITY:-^30}")
+                window.update()
+                print(f"Temperature: {temperature}")
+                var.set(f"Temperature: {temperature}")
+                window.update()
+                # print(f"Humidity: {humidity}")
+                var.set(f"Humidity: {humidity}")
+                window.update()
+                # print(f"Pressure: {pressure}")
+                var.set(f"Pressure: {pressure}")
+                window.update()
+                # print(f"Weather Report: {report[0]['description']}")
+                var.set(f"Weather Report: {report[0]['description']}")
+                window.update()
+            else:
+                # showing the error message
+                print("Error in the HTTP request")
+        elif "play" in query :
+            song = query.replace("play","")
+            var.set("Playing" + song)
+            window.update()
+            speak("Playing" + song)
+            pywhatkit.playonyt(song)
+
+        elif "who are you" in query:
+            var.set("I am your virtual assistant created by Prakhar Maheshwari")
+            window.update()
+            speak("I am your virtual assistant created by Prakhar Maheshwari")
+
+        elif 'reason for you' in query:
+            var.set("I am your virtual assistant created by Prakhar Maheshwari")
+            window.update()
+            speak("I was created as a Minor project by Mr. Prakhar Maheshwari")
+
+        elif 'news' in query:
+            try:
+                jsonObj = urlopen(
+                    ("https://newsapi.org/v2/top-headlines?country=us&apiKey=e3e5ed3d82a3404190a2eb5b681c01e7"))
+                data = json.load(jsonObj)
+                i = 1
+                speak('here are some top news from the times of india')
+                print('''=============== TIMES OF INDIA ============''' + '\n')
+
+                for item in data['articles']:
+                    # print(str(i) + '. ' + item['title'] + '\n')
+                    var.set(str(i) + '. ' + item['title'] + '\n')
+                    window.update()
+                    var.set(item['description'] + '\n')
+                    window.update()
+                    # print(item['description'] + '\n')
+                    speak(str(i) + '. ' + item['title'] + '\n')
+                    i += 1
+                    continue
+            except Exception as e:
+                print(str(e))
+        elif 'calculation' in query:
+           pass
+
+        elif 'click photo' in query or 'click photo' in query or 'photo' in query:
+            stream = cv2.VideoCapture(0)
+            grabbed, frame = stream.read()
+            if grabbed:
+                cv2.imshow('pic', frame)
+                cv2.imwrite('pic.jpg', frame)
+            stream.release()
+
+        elif 'record video' in query or 'video' in query:
+            cap = cv2.VideoCapture(0)
+            out = cv2.VideoWriter('output.avi', -1, 20.0, (640, 480))
+        while (cap.isOpened()):
+            ret, frame = cap.read()
+            if ret:
+                out.write(frame)
+                cv2.imshow('frame', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            else:
+                break
+        else:
+            print("Sorry ..!! Please say Again .. ")
+        cap.release()
+        out.release()
+        cv2.destroyAllWindows()
+
+def update(ind):
+
+    frame = frames[(ind) % 100]
+    ind += 1
+    label.configure(image=frame)
+    window.after(100, update, ind)
+
+window.configure(bg='#1c16c7')
+label2 = Label(window, textvariable=var1, bg='#FAB60C')
+label2.config(font=("Courier", 20))
+var1.set('User Said:')
+label2.pack()
+
+label1 = Label(window, textvariable=var, bg='#ADD8E6')
+label1.config(font=("Courier", 20))
+var.set('Welcome')
+label1.pack()
+
+frames = [PhotoImage(file='Assistant.gif', format='gif -index %i' % (i)) for i in range(100)]
+window.title('Desktop Voice Assistant THE_JARVIS')
+
+label = Label(window, width=1000, height=600)
+label.pack()
+window.after(0, update, 0)
+
+btn0 = Button(text='WISH ME', width=20, command=wishme, bg='#5C85FB')
+btn0.config(font=("Courier", 12))
+btn0.pack()
+
+btn0 = Button(text='INTRODUCTION', width=20, command=Introduction, bg='#5C85FB')
+btn0.config(font=("Courier", 12))
+btn0.pack()
+
+btn1 = Button(text='PLAY', width=20, command=play, bg='#5C85FB')
+btn1.config(font=("Courier", 12))
+btn1.pack()
+
+btn2 = Button(text='EXIT', width=20, command=window.destroy, bg='#5C85FB')
+btn2.config(font=("Courier", 12))
+btn2.pack()
+window.mainloop()
